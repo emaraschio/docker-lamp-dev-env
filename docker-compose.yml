@@ -1,0 +1,43 @@
+nginx:
+    build: ./nginx/
+    ports:
+        - 80:80
+    links:
+        - php
+    volumes_from:
+        - app
+
+php:
+    build: ./php/
+    expose:
+        - 9000
+    links:
+        - mysql
+    volumes_from:
+        - app
+
+app:
+    image: php:7.0-fpm
+    volumes:
+        - ..:/var/www/html
+    command: "true"
+
+mysql:
+    image: mysql:latest
+    expose:
+        - 3306
+    volumes_from:
+        - data
+    ports:
+       - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: app_db
+        MYSQL_USER: dev
+        MYSQL_PASSWORD: secret
+
+data:
+    image: mysql:latest
+    volumes:
+        - /var/lib/mysql
+    command: "true"
